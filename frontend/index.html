@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodFlow — Good Food. Smart Choices. Delivered Better.</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============================= NAVBAR ============================= -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">🍔 FoodFlow</a>
+    <ul class="nav-links">
+      <li><a href="#" class="active" onclick="showSection('home')">Home</a></li>
+      <li><a href="#" onclick="showSection('restaurants')">Restaurants</a></li>
+      <li><a href="#" onclick="showSection('foods')">Food</a></li>
+      <li><a href="#" onclick="showSection('rescue')">Food Rescue</a></li>
+      <li><a href="#" onclick="requireLogin('group-order.html')">Group Order</a></li>
+    </ul>
+    <div class="nav-search">
+      <input type="text" id="global-search" placeholder="What are you craving today?" oninput="handleGlobalSearch(this.value)">
+    </div>
+    <div class="nav-icons">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">🌓</button>
+      <div id="guest-actions">
+        <button class="btn btn-outline btn-sm" onclick="openModal('login-modal')">Log in</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('register-modal')">Sign up</button>
+      </div>
+      <div id="user-actions" style="display:none;align-items:center;gap:12px;">
+        <button class="icon-btn" onclick="location.href='dashboard.html#notifications'">🔔<span class="badge" id="notif-badge" style="display:none;">0</span></button>
+        <button class="icon-btn" onclick="location.href='dashboard.html#cart'">🛒<span class="badge" id="cart-badge" style="display:none;">0</span></button>
+        <a href="dashboard.html" class="btn btn-ghost btn-sm">My Dashboard</a>
+      </div>
+    </div>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('mobile-show')">☰</button>
+  </div>
+</nav>
+
+<!-- ============================= HERO ============================= -->
+<section class="hero" id="home">
+  <div class="floaties">
+    <span style="top:10%;left:10%;">🍕</span>
+    <span style="top:20%;right:12%;animation-delay:1s;">🍔</span>
+    <span style="bottom:15%;left:18%;animation-delay:2s;">🥗</span>
+    <span style="bottom:10%;right:20%;animation-delay:3s;">🍜</span>
+  </div>
+  <h1>Good Food.<br>Smart Choices.<br><span>Delivered Better.</span></h1>
+  <p>Discover food that matches your taste, budget and lifestyle — powered by FoodFlow's Smart Recommendation Engine.</p>
+  <div class="hero-search">
+    <input type="text" id="hero-search" placeholder="What are you craving today?" oninput="handleGlobalSearch(this.value)">
+    <button class="btn btn-primary" onclick="handleGlobalSearch(document.getElementById('hero-search').value)">Search</button>
+  </div>
+  <div class="hero-buttons">
+    <button class="btn btn-primary" onclick="showSection('foods')">Explore Food</button>
+    <button class="btn btn-outline" onclick="showSection('restaurants')">Find Restaurants</button>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- ============================= SEARCH RESULTS ============================= -->
+  <section class="section" id="search-results-section" style="display:none;">
+    <div class="section-head"><h2>Search results</h2></div>
+    <div id="search-results" class="grid grid-4"></div>
+  </section>
+
+  <!-- ============================= RECOMMENDED (logged-in) ============================= -->
+  <section class="section" id="recommended-section" style="display:none;">
+    <div class="section-head"><h2 id="greeting">Recommended for you</h2></div>
+    <div id="recommended-cards" class="grid grid-4"></div>
+  </section>
+
+  <!-- ============================= FILTERS + FOODS ============================= -->
+  <section class="section" id="foods-section">
+    <div class="section-head"><h2>Popular Food</h2></div>
+    <div class="filters-bar" id="food-filters">
+      <span class="chip active" data-filter="food_type" data-value="">All</span>
+      <span class="chip" data-filter="food_type" data-value="Vegetarian">🟢 Veg</span>
+      <span class="chip" data-filter="food_type" data-value="Non-Vegetarian">🔴 Non-Veg</span>
+      <span class="chip" data-filter="food_type" data-value="Vegan">🌱 Vegan</span>
+      <span class="chip" data-filter="high_protein" data-value="true">💪 High Protein</span>
+      <span class="chip" data-filter="low_calorie" data-value="true">🥗 Low Calorie</span>
+      <span class="chip" data-filter="food_rescue" data-value="true">🍱 Food Rescue</span>
+      <span class="chip" data-filter="offers" data-value="true">🏷️ Offers</span>
+      <span class="chip" data-filter="max_price" data-value="150">Under ₹150</span>
+      <span class="chip" data-filter="min_rating" data-value="4">⭐ 4+</span>
+    </div>
+    <div id="food-grid" class="grid grid-4"></div>
+  </section>
+
+  <!-- ============================= RESTAURANTS ============================= -->
+  <section class="section" id="restaurants-section">
+    <div class="section-head"><h2>Restaurants near you</h2></div>
+    <div id="restaurant-grid" class="grid grid-4"></div>
+  </section>
+
+  <!-- ============================= FOOD RESCUE ============================= -->
+  <section class="section" id="rescue-section">
+    <div class="section-head"><h2>🍱 Food Rescue — Save Food + Save Money</h2></div>
+    <div id="rescue-grid" class="grid grid-4"></div>
+  </section>
+
+</div>
+
+<footer>
+  FoodFlow · A smart food-delivery platform · Polling-based order tracking (no fake real-time data) · © 2026
+</footer>
+
+<!-- ============================= LOGIN MODAL ============================= -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('login-modal')">✕</button>
+    <h2>Welcome back</h2>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="chip active" id="login-as-customer" onclick="setLoginRole('customer')">Customer</button>
+      <button class="chip" id="login-as-delivery" onclick="setLoginRole('delivery')">Delivery Partner</button>
+    </div>
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group"><label>Email or Phone</label><input type="text" id="login-identifier" required></div>
+      <div class="form-group"><label>Password</label><input type="password" id="login-password" required></div>
+      <label style="font-size:13px;display:flex;gap:6px;align-items:center;margin-bottom:14px;">
+        <input type="checkbox" id="remember-me"> Remember me
+      </label>
+      <button class="btn btn-primary btn-block" type="submit">Log In</button>
+    </form>
+    <p style="text-align:center;margin-top:14px;font-size:13px;">
+      New here? <a href="#" style="color:var(--primary);font-weight:700;" onclick="closeModal('login-modal');openModal('register-modal')">Create an account</a>
+    </p>
+  </div>
+</div>
+
+<!-- ============================= REGISTER MODAL (multi-step) ============================= -->
+<div class="modal-overlay" id="register-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('register-modal')">✕</button>
+    <h2>Create My FoodFlow Profile</h2>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <button class="chip active" id="reg-as-customer" onclick="setRegisterRole('customer')">Customer</button>
+      <button class="chip" id="reg-as-delivery" onclick="setRegisterRole('delivery')">Delivery Partner</button>
+    </div>
+    <div class="step-dots" id="reg-dots"></div>
+    <form id="register-form" onsubmit="handleRegisterSubmit(event)">
+      <div id="reg-steps"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button type="button" class="btn btn-ghost" id="reg-back" onclick="regStep(-1)" style="display:none;">Back</button>
+        <button type="button" class="btn btn-primary btn-block" id="reg-next" onclick="regStep(1)">Continue</button>
+        <button type="submit" class="btn btn-primary btn-block" id="reg-submit" style="display:none;">Create My FoodFlow Profile</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= FOOD DETAILS MODAL ============================= -->
+<div class="modal-overlay" id="food-modal">
+  <div class="modal" style="max-width:520px;">
+    <button class="modal-close" onclick="closeModal('food-modal')">✕</button>
+    <div id="food-modal-body"></div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

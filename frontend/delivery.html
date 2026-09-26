@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodFlow — Delivery Partner Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">🍔 FoodFlow <span style="font-size:12px;color:var(--muted);font-weight:600;">Partner</span></a>
+    <div style="flex:1;"></div>
+    <div class="nav-icons">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
+        <span id="availability-label">Offline</span>
+        <input type="checkbox" id="availability-toggle" onchange="setAvailability(this.checked)">
+      </label>
+      <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+      <button class="btn btn-ghost btn-sm" onclick="confirmAction('Log out?', () => logout('index.html'))">Log out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container" style="padding-top:24px;">
+  <h2 id="dp-greeting">Welcome 👋</h2>
+
+  <div class="grid grid-4" style="margin-bottom:24px;">
+    <div class="stat-card"><div class="muted">Total Earnings</div><div class="stat-value" id="dp-earnings">₹0</div></div>
+    <div class="stat-card"><div class="muted">Completed Deliveries</div><div class="stat-value" id="dp-deliveries">0</div></div>
+    <div class="stat-card"><div class="muted">Rating</div><div class="stat-value" id="dp-rating">5.0 ⭐</div></div>
+    <div class="stat-card"><div class="muted">Active Requests</div><div class="stat-value" id="dp-active">0</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="orders" onclick="switchDpTab('orders')">Available / Active Orders</button>
+    <button class="tab-btn" data-tab="earnings" onclick="switchDpTab('earnings')">Earnings</button>
+    <button class="tab-btn" data-tab="reviews" onclick="switchDpTab('reviews')">Reviews</button>
+    <button class="tab-btn" data-tab="activity" onclick="switchDpTab('activity')">Activity</button>
+    <button class="tab-btn" data-tab="profile" onclick="switchDpTab('profile')">Profile</button>
+  </div>
+
+  <div class="tab-panel active" id="dp-tab-orders">
+    <div id="dp-orders-list"></div>
+  </div>
+
+  <div class="tab-panel" id="dp-tab-earnings">
+    <table id="earnings-table"><tr><th>Order</th><th>Total</th><th>Your Earning</th><th>Delivered</th></tr></table>
+  </div>
+
+  <div class="tab-panel" id="dp-tab-reviews">
+    <div id="dp-reviews-list"></div>
+  </div>
+
+  <div class="tab-panel" id="dp-tab-activity">
+    <ul class="timeline" id="dp-activity-timeline"></ul>
+  </div>
+
+  <div class="tab-panel" id="dp-tab-profile">
+    <div style="max-width:420px;">
+      <div class="form-group"><label>Name</label><input type="text" id="dp-name" disabled></div>
+      <div class="form-group"><label>Phone</label><input type="text" id="dp-phone" disabled></div>
+      <div class="form-group"><label>Vehicle</label><input type="text" id="dp-vehicle" disabled></div>
+      <p class="muted">Profile editing coming soon — contact FoodFlow support for changes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Order details / status update modal -->
+<div class="modal-overlay" id="order-status-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('order-status-modal')">✕</button>
+    <div id="order-status-body"></div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/delivery.js"></script>
+</body>
+</html>

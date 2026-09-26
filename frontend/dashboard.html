@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My FoodFlow Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">🍔 FoodFlow</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Explore</a></li>
+      <li><a href="#" onclick="switchTab('orders')">Orders</a></li>
+      <li><a href="#" onclick="switchTab('favorites')">Favorites</a></li>
+      <li><a href="#" onclick="switchTab('rewards')">Rewards</a></li>
+    </ul>
+    <div style="flex:1;"></div>
+    <div class="nav-icons">
+      <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+      <button class="icon-btn" onclick="switchTab('notifications')">🔔<span class="badge" id="notif-badge" style="display:none;">0</span></button>
+      <button class="icon-btn" onclick="switchTab('cart')">🛒<span class="badge" id="cart-badge" style="display:none;">0</span></button>
+      <button class="btn btn-ghost btn-sm" onclick="confirmAction('Log out of FoodFlow?', () => logout('index.html'))">Log out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container" style="padding-top:24px;">
+  <h2 id="dash-greeting">Good day 👋</h2>
+  <p class="muted">Here's what's happening with your FoodFlow account.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn" data-tab="cart" onclick="switchTab('cart')">Cart</button>
+    <button class="tab-btn" data-tab="orders" onclick="switchTab('orders')">Orders</button>
+    <button class="tab-btn" data-tab="track" onclick="switchTab('track')">Track Order</button>
+    <button class="tab-btn" data-tab="favorites" onclick="switchTab('favorites')">Favorites</button>
+    <button class="tab-btn" data-tab="preferences" onclick="switchTab('preferences')">Preferences</button>
+    <button class="tab-btn" data-tab="addresses" onclick="switchTab('addresses')">Addresses</button>
+    <button class="tab-btn" data-tab="rewards" onclick="switchTab('rewards')">Rewards</button>
+    <button class="tab-btn" data-tab="budget" onclick="switchTab('budget')">Budget</button>
+    <button class="tab-btn" data-tab="nutrition" onclick="switchTab('nutrition')">Nutrition</button>
+    <button class="tab-btn" data-tab="group" onclick="switchTab('group')">Group Order</button>
+    <button class="tab-btn" data-tab="activity" onclick="switchTab('activity')">Activity</button>
+    <button class="tab-btn" data-tab="notifications" onclick="switchTab('notifications')">Notifications</button>
+    <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')">Profile</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="grid grid-4" style="margin-bottom:24px;">
+      <div class="stat-card"><div class="muted">Reward Points</div><div class="stat-value" id="ov-points">0</div></div>
+      <div class="stat-card"><div class="muted">Wallet Balance</div><div class="stat-value" id="ov-wallet">₹0</div></div>
+      <div class="stat-card"><div class="muted">Today's Spending</div><div class="stat-value" id="ov-spend">₹0</div></div>
+      <div class="stat-card"><div class="muted">Active Orders</div><div class="stat-value" id="ov-active">0</div></div>
+    </div>
+    <div class="section-head"><h2>Recommended for you</h2></div>
+    <div id="ov-recommended" class="grid grid-4"></div>
+  </div>
+
+  <!-- CART -->
+  <div class="tab-panel" id="tab-cart">
+    <div class="section-head"><h2>Your Cart</h2></div>
+    <div id="cart-items"></div>
+    <div id="cart-summary" style="max-width:380px;margin-left:auto;"></div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="tab-panel" id="tab-orders">
+    <div class="section-head"><h2>Order History</h2></div>
+    <div id="orders-list"></div>
+  </div>
+
+  <!-- TRACK ORDER -->
+  <div class="tab-panel" id="tab-track">
+    <div class="section-head"><h2>Track Order</h2></div>
+    <div class="form-group" style="max-width:320px;">
+      <label>Order ID</label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="track-order-id" placeholder="e.g. O-3F2A9C1B">
+        <button class="btn btn-primary" onclick="trackOrder()">Track</button>
+      </div>
+    </div>
+    <div id="track-result"></div>
+  </div>
+
+  <!-- FAVORITES -->
+  <div class="tab-panel" id="tab-favorites">
+    <div class="section-head"><h2>Favorite Food</h2></div>
+    <div id="fav-foods" class="grid grid-4" style="margin-bottom:24px;"></div>
+    <div class="section-head"><h2>Favorite Restaurants</h2></div>
+    <div id="fav-restaurants" class="grid grid-4"></div>
+  </div>
+
+  <!-- PREFERENCES -->
+  <div class="tab-panel" id="tab-preferences">
+    <div class="section-head"><h2>Food Preferences</h2></div>
+    <div style="max-width:520px;">
+      <div class="form-group"><label>Food Type</label>
+        <select id="pref-food-type"><option>Vegetarian</option><option>Non-Vegetarian</option><option>Vegan</option><option>No preference</option></select>
+      </div>
+      <div class="form-group"><label>Spice Level</label>
+        <select id="pref-spice"><option>Low</option><option>Medium</option><option>High</option></select>
+      </div>
+      <div class="form-group"><label>Nutrition Goal</label>
+        <select id="pref-nutrition"><option value="">None</option><option>High protein</option><option>Low calorie</option></select>
+      </div>
+      <div class="form-group"><label>Daily Budget (₹)</label><input type="number" id="pref-daily-budget"></div>
+      <div class="form-group"><label>Monthly Budget (₹)</label><input type="number" id="pref-monthly-budget"></div>
+      <button class="btn btn-primary" onclick="savePreferences()">Save Preferences</button>
+    </div>
+  </div>
+
+  <!-- ADDRESSES -->
+  <div class="tab-panel" id="tab-addresses">
+    <div class="section-head"><h2>Saved Addresses</h2><button class="btn btn-primary btn-sm" onclick="openModal('address-modal')">+ Add Address</button></div>
+    <div id="address-list"></div>
+  </div>
+
+  <!-- REWARDS -->
+  <div class="tab-panel" id="tab-rewards">
+    <div class="section-head"><h2>FoodFlow Points</h2></div>
+    <div class="stat-card" style="max-width:320px;margin-bottom:20px;">
+      <div class="muted">Available Points</div><div class="stat-value" id="rewards-points">0</div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <input type="number" id="redeem-points" placeholder="Points to redeem" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);">
+        <button class="btn btn-primary btn-sm" onclick="redeemPoints()">Redeem</button>
+      </div>
+    </div>
+    <h3>Transaction History</h3>
+    <div id="rewards-history"></div>
+  </div>
+
+  <!-- BUDGET -->
+  <div class="tab-panel" id="tab-budget">
+    <div class="section-head"><h2>Smart Budget Mode</h2></div>
+    <div class="stat-card" style="max-width:420px;">
+      <div class="card-row"><span>Today's spending</span><strong id="budget-text">₹0 / ₹0</strong></div>
+      <div class="progress-bar"><div class="progress-bar-fill" id="budget-fill" style="width:0%;"></div></div>
+    </div>
+  </div>
+
+  <!-- NUTRITION -->
+  <div class="tab-panel" id="tab-nutrition">
+    <div class="section-head"><h2>Nutrition Dashboard — Today</h2></div>
+    <div class="grid grid-2" style="max-width:520px;">
+      <div class="stat-card"><div class="muted">Calories</div><div class="stat-value" id="nut-calories">0 kcal</div></div>
+      <div class="stat-card"><div class="muted">Protein</div><div class="stat-value" id="nut-protein">0 g</div></div>
+    </div>
+  </div>
+
+  <!-- GROUP ORDER -->
+  <div class="tab-panel" id="tab-group">
+    <div class="section-head"><h2>Group Ordering</h2></div>
+    <div class="grid grid-2">
+      <div class="stat-card">
+        <h3>Create a Group Order</h3>
+        <div class="form-group"><label>Restaurant ID</label><input type="text" id="group-restaurant-id" placeholder="Paste a restaurant_id"></div>
+        <button class="btn btn-primary" onclick="createGroup()">Create Group</button>
+      </div>
+      <div class="stat-card">
+        <h3>Join a Group Order</h3>
+        <div class="form-group"><label>Group Code</label><input type="text" id="group-join-code" placeholder="FOOD-72X9"></div>
+        <button class="btn btn-outline" onclick="joinGroup()">Join Group</button>
+      </div>
+    </div>
+    <div id="group-result" style="margin-top:20px;"></div>
+  </div>
+
+  <!-- ACTIVITY -->
+  <div class="tab-panel" id="tab-activity">
+    <div class="section-head"><h2>My Activity</h2></div>
+    <ul class="timeline" id="activity-timeline"></ul>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="tab-panel" id="tab-notifications">
+    <div class="section-head"><h2>Notifications</h2></div>
+    <div id="notifications-list"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="tab-panel" id="tab-profile">
+    <div class="section-head"><h2>My Profile</h2></div>
+    <div style="max-width:420px;">
+      <div class="form-group"><label>Name</label><input type="text" id="profile-name"></div>
+      <div class="form-group"><label>Phone</label><input type="text" id="profile-phone"></div>
+      <div class="form-group"><label>Email</label><input type="text" id="profile-email" disabled></div>
+      <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout modal -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('checkout-modal')">✕</button>
+    <h2>Checkout</h2>
+    <div id="checkout-body"></div>
+  </div>
+</div>
+
+<!-- Address modal -->
+<div class="modal-overlay" id="address-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('address-modal')">✕</button>
+    <h2>Add Address</h2>
+    <div class="form-group"><label>Label</label><input type="text" id="new-addr-label" placeholder="Home / Work"></div>
+    <div class="form-group"><label>Full Address</label><textarea id="new-addr-text"></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="addAddress()">Save Address</button>
+  </div>
+</div>
+
+<!-- Review modal -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('review-modal')">✕</button>
+    <h2>How was your order?</h2>
+    <div id="review-body"></div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

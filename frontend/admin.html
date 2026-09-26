@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodFlow — Admin Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="logo">🍔 FoodFlow <span style="font-size:12px;color:var(--muted);font-weight:600;">Admin</span></a>
+    <div style="flex:1;"></div>
+    <div class="nav-icons">
+      <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+      <button class="btn btn-ghost btn-sm" onclick="confirmAction('Log out?', () => logout('index.html'))">Log out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container" style="padding-top:24px;">
+
+  <div id="admin-login-gate">
+    <h2>Admin Login</h2>
+    <div style="max-width:360px;">
+      <div class="form-group"><label>Admin Email</label><input type="text" id="admin-email"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="admin-password"></div>
+      <button class="btn btn-primary btn-block" onclick="adminLogin()">Log In</button>
+      <p class="muted" style="font-size:12px;margin-top:8px;">Demo: admin@foodflow.demo / admin123</p>
+    </div>
+  </div>
+
+  <div id="admin-panel" style="display:none;">
+    <h2>System Analytics</h2>
+    <div class="grid grid-4" style="margin-bottom:24px;">
+      <div class="stat-card"><div class="muted">Total Users</div><div class="stat-value" id="a-users">0</div></div>
+      <div class="stat-card"><div class="muted">Total Orders</div><div class="stat-value" id="a-orders">0</div></div>
+      <div class="stat-card"><div class="muted">Revenue</div><div class="stat-value" id="a-revenue">₹0</div></div>
+      <div class="stat-card"><div class="muted">Restaurants</div><div class="stat-value" id="a-restaurants">0</div></div>
+      <div class="stat-card"><div class="muted">Delivery Partners</div><div class="stat-value" id="a-partners">0</div></div>
+      <div class="stat-card"><div class="muted">Active Deliveries</div><div class="stat-value" id="a-active">0</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="users" onclick="switchAdminTab('users')">Users</button>
+      <button class="tab-btn" data-tab="partners" onclick="switchAdminTab('partners')">Delivery Partners</button>
+      <button class="tab-btn" data-tab="restaurants" onclick="switchAdminTab('restaurants')">Restaurants</button>
+      <button class="tab-btn" data-tab="foods" onclick="switchAdminTab('foods')">Foods</button>
+      <button class="tab-btn" data-tab="orders" onclick="switchAdminTab('orders')">Orders</button>
+      <button class="tab-btn" data-tab="reviews" onclick="switchAdminTab('reviews')">Reviews</button>
+      <button class="tab-btn" data-tab="coupons" onclick="switchAdminTab('coupons')">Coupons</button>
+      <button class="tab-btn" data-tab="rescue" onclick="switchAdminTab('rescue')">Food Rescue</button>
+    </div>
+
+    <div class="tab-panel active" id="admin-tab-users">
+      <input type="text" placeholder="Search users..." style="max-width:280px;margin-bottom:14px;" onkeyup="searchUsers(this.value)">
+      <table id="users-table"><tr><th>Name</th><th>Email</th><th>Status</th><th></th></tr></table>
+    </div>
+
+    <div class="tab-panel" id="admin-tab-partners">
+      <table id="partners-table"><tr><th>Name</th><th>Vehicle</th><th>Rating</th><th>Status</th><th></th></tr></table>
+    </div>
+
+    <div class="tab-panel" id="admin-tab-restaurants">
+      <div class="section-head"><h3>Restaurants</h3><button class="btn btn-primary btn-sm" onclick="openModal('add-restaurant-modal')">+ Add Restaurant</button></div>
+      <table id="restaurants-table"><tr><th>Name</th><th>Cuisine</th><th>Rating</th></tr></table>
+    </div>
+
+    <div class="tab-panel" id="admin-tab-foods">
+      <div class="section-head"><h3>Foods</h3><button class="btn btn-primary btn-sm" onclick="openModal('add-food-modal')">+ Add Food</button></div>
+    </div>
+
+    <div class="tab-panel" id="admin-tab-orders">
+      <select onchange="loadAdminOrders(this.value)" style="max-width:200px;margin-bottom:14px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);">
+        <option value="">All statuses</option>
+        <option value="PLACED">Pending</option><option value="PREPARING">Preparing</option>
+        <option value="OUT_FOR_DELIVERY">Out for delivery</option><option value="DELIVERED">Delivered</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+      <table id="orders-table"><tr><th>Order ID</th><th>Total</th><th>Status</th><th>Date</th></tr></table>
+    </div>
+
+    <div class="tab-panel" id="admin-tab-reviews">
+      <label style="font-size:13px;"><input type="checkbox" onchange="loadAdminReviews(this.checked)"> Show only reported reviews</label>
+      <div id="admin-reviews-list" style="margin-top:14px;"></div>
+    </div>
+
+    <div class="tab-panel" id="admin-tab-coupons">
+      <div class="section-head"><h3>Coupons</h3><button class="btn btn-primary btn-sm" onclick="openModal('add-coupon-modal')">+ Add Coupon</button></div>
+      <table id="coupons-table"><tr><th>Code</th><th>Type</th><th>Value</th></tr></table>
+    </div>
+
+    <div class="tab-panel" id="admin-tab-rescue">
+      <div class="section-head"><h3>Food Rescue Listings</h3><button class="btn btn-primary btn-sm" onclick="openModal('add-rescue-modal')">+ Add Listing</button></div>
+      <div id="admin-rescue-list" class="grid grid-4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add restaurant modal -->
+<div class="modal-overlay" id="add-restaurant-modal">
+  <div class="modal"><button class="modal-close" onclick="closeModal('add-restaurant-modal')">✕</button>
+    <h2>Add Restaurant</h2>
+    <div class="form-group"><label>Name</label><input id="r-name"></div>
+    <div class="form-group"><label>Cuisine</label><input id="r-cuisine"></div>
+    <div class="form-group"><label>Delivery Time (min)</label><input type="number" id="r-time" value="30"></div>
+    <button class="btn btn-primary btn-block" onclick="addRestaurant()">Save</button>
+  </div>
+</div>
+
+<!-- Add food modal -->
+<div class="modal-overlay" id="add-food-modal">
+  <div class="modal"><button class="modal-close" onclick="closeModal('add-food-modal')">✕</button>
+    <h2>Add Food Item</h2>
+    <div class="form-group"><label>Restaurant ID</label><input id="f-restaurant-id"></div>
+    <div class="form-group"><label>Name</label><input id="f-name"></div>
+    <div class="form-group"><label>Price (₹)</label><input type="number" id="f-price"></div>
+    <div class="form-group"><label>Food Type</label>
+      <select id="f-type"><option>Vegetarian</option><option>Non-Vegetarian</option><option>Vegan</option><option>Egg</option></select>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="addFood()">Save</button>
+  </div>
+</div>
+
+<!-- Add coupon modal -->
+<div class="modal-overlay" id="add-coupon-modal">
+  <div class="modal"><button class="modal-close" onclick="closeModal('add-coupon-modal')">✕</button>
+    <h2>Add Coupon</h2>
+    <div class="form-group"><label>Code</label><input id="c-code"></div>
+    <div class="form-group"><label>Type</label><select id="c-type"><option value="percent">Percent</option><option value="flat">Flat</option></select></div>
+    <div class="form-group"><label>Value</label><input type="number" id="c-value"></div>
+    <button class="btn btn-primary btn-block" onclick="addCoupon()">Save</button>
+  </div>
+</div>
+
+<!-- Add rescue modal -->
+<div class="modal-overlay" id="add-rescue-modal">
+  <div class="modal"><button class="modal-close" onclick="closeModal('add-rescue-modal')">✕</button>
+    <h2>Add Food Rescue Listing</h2>
+    <div class="form-group"><label>Restaurant ID</label><input id="fr-restaurant-id"></div>
+    <div class="form-group"><label>Food Name</label><input id="fr-name"></div>
+    <div class="form-group"><label>Normal Price</label><input type="number" id="fr-normal"></div>
+    <div class="form-group"><label>Rescue Price</label><input type="number" id="fr-rescue"></div>
+    <div class="form-group"><label>Portions Left</label><input type="number" id="fr-portions" value="5"></div>
+    <div class="form-group"><label>Available Until</label><input type="datetime-local" id="fr-until"></div>
+    <button class="btn btn-primary btn-block" onclick="addRescue()">Save</button>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
