@@ -1177,10 +1177,14 @@ def admin_list_coupons():
 
 
 # ---- Health check --------------------------------------------------------
-@app.get("/api/health")
-def health():
+@app.get("/")
+def home():
+    return jsonify({
+        "success": True,
+        "message": "FoodFlow API is running!"
+    })
+    
     return jsonify({"status": "FoodFlow API is running.", "time": now().isoformat()})
-
 
 if __name__ == "__main__":
     app.run(debug=Config.DEBUG, port=5000)
