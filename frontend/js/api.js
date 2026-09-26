@@ -4,7 +4,7 @@
    dark mode. Loaded on every page before the page-specific script.
    ========================================================================= */
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://foodflow-backend-99yo.onrender.com/api";
 
 /* ---- Session storage (per role) ---------------------------------------- */
 const Session = {
